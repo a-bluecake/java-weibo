@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>微博详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #fff8f8;
+            color: #333;
+            padding: 25px;
+        }
+        #detail-app {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(220, 38, 38, 0.08);
+        }
+
+        h1 {
+            color: #dc2626;
+            font-size: 26px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #fee2e2;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            color: #b91c1c;
+            font-size: 18px;
+            margin: 25px 0 15px;
+            padding-left: 10px;
+            border-left: 3px solid #ef4444;
+        }
+
+        .weibo-detail {
+            padding: 20px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            background-color: #fff5f5;
+            margin-bottom: 20px;
+        }
+
+        .weibo-detail p {
+            margin: 10px 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .weibo-author {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .weibo-time {
+            color: #f87171;
+            font-size: 14px;
+        }
+
+        .load-error {
+            text-align: center;
+            padding: 30px;
+            color: #ef4444;
+            background-color: #fff1f1;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #fee2e2;
+            margin: 20px 0;
+        }
+
+        .comment-list {
+            margin: 15px 0;
+        }
+
+        .no-comment {
+            text-align: center;
+            padding: 20px;
+            color: #f87171;
+            background-color: #fff1f1;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .comment-item {
+            margin: 12px 0;
+            padding: 15px;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            background-color: #fff8f8;
+            transition: all 0.3s ease;
+        }
+
+        .comment-item:hover {
+            border-color: #f87171;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08);
+        }
+
+        .comment-item p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .comment-author {
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .comment-time {
+            color: #f87171;
+            font-size: 13px;
+        }
+
+        .button-group {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .publish-comment-btn {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .publish-comment-btn:hover {
+            background-color: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .back-btn {
+            background-color: #fff;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
+
+        .back-btn:hover {
+            background-color: #fef2f2;
+        }
+    </style>
+</head>
+<body>
+<div id="detail-app">
+    <h1>微博详情</h1>
+
+    <div v-if="detailsPageVO" class="weibo-detail">
+        <p class="weibo-author">发布人：{{ detailsPageVO.weiboNickname }}</p>
+        <p>内容：{{ detailsPageVO.weiboContent }}</p>
+        <p class="weibo-time">发布时间：{{ formatTime(detailsPageVO.weiboCreated) }}</p>
+    </div>
+    <p v-else class="load-error">加载失败，请先选择微博</p>
+
+    <hr>
+    <h3>评论列表</h3>
+    <div v-if="detailsPageVO" class="comment-list">
+        <p v-if="detailsPageVO.commentList.length === 0" class="no-comment">暂无评论</p>
+        <div v-for="(comment, index) in detailsPageVO.commentList" :key="index" class="comment-item">
+            <p class="comment-author">评论人：{{ comment.commentNickname }}</p>
+            <p>内容：{{ comment.commentContent }}</p>
+            <p class="comment-time">时间：{{ formatTime(comment.commentCreated) }}</p>
+        </div>
+    </div>
+
+    <hr>
+    <div class="button-group">
+        <button class="publish-comment-btn" @click="goPublishComment()">发布评论</button>
+        <button class="back-btn" @click="goBack()">返回首页</button>
+    </div>
+</div>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script>
+    new Vue({
+        el: "#detail-app",
+        data: {
+            detailsPageVO: null,
+            backendPort: "4566"
+        },
+        mounted() {
+            this.loadDetails();
+        },
+        methods: {
+            loadDetails() {
+                axios.get(`http://localhost:${this.backendPort}/v1/users/detailspage`)
+                    .then(res => {
+                        this.detailsPageVO = res.data;
+                        if (!this.detailsPageVO) {
+                            alert("请先登录并选择微博");
+                            location.href = "login.html";
+                        }
+                    })
+                    .catch(() => {
+                        alert("网络错误");
+                        location.href = "homepage.html";
+                    });
+            },
+            goPublishComment() {
+                location.href = "publishcommentpage.html";
+            },
+            goBack() {
+                location.href = "homepage.html";
+            },
+            formatTime(date) {
+                return date ? new Date(date).toLocaleString() : "未知时间";
+            }
+        }
+    });
+</script>
+</body>
+</html>

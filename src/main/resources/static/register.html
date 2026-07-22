@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册页面</title>
+</head>
+<body>
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="red-ornament"></div>
+            <h1 class="register-title">用户注册</h1>
+            <p class="register-subtitle">创建账号，开启全新体验</p>
+        </div>
+
+        <form class="register-form">
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="icon fa fa-user"></i>
+                    <input
+                            type="text"
+                            placeholder="请输入用户名"
+                            v-model="user.username"
+                            class="form-input"
+                            required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="icon fa fa-lock"></i>
+                    <input
+                            type="password"
+                            placeholder="请输入密码"
+                            v-model="user.password"
+                            class="form-input"
+                            required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="icon fa fa-id-card-o"></i>
+                    <input
+                            type="text"
+                            placeholder="请输入昵称"
+                            v-model="user.nickname"
+                            class="form-input"
+                            required
+                    >
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="register-btn" @click="register()">
+                    注册
+                </button>
+                <button type="button" class="cancel-btn" @click="goToLogin()">
+                    取消
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    .register-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #fff8f8 0%, #ffebee 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        border-radius: 16px;
+        padding: 40px 35px;
+        box-shadow: 0 12px 30px rgba(239, 68, 68, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .register-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 35px;
+        position: relative;
+    }
+
+    .red-ornament {
+        width: 60px;
+        height: 6px;
+        background: linear-gradient(90deg, #f87171 0%, #ef4444 100%);
+        border-radius: 3px;
+        margin: 0 auto 20px;
+    }
+
+    .register-title {
+        color: #dc2626;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .register-subtitle {
+        color: #f87171;
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-group {
+        position: relative;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .form-input {
+        width: 100%;
+        height: 54px;
+        padding: 0 20px 0 50px;
+        border: 2px solid #fee2e2;
+        border-radius: 10px;
+        font-size: 16px;
+        color: #333;
+        transition: all 0.3s ease;
+        background: #fff5f5;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #ef4444;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+    }
+
+    .form-input::placeholder {
+        color: #f87171;
+        opacity: 0.7;
+    }
+
+    .icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ef4444;
+        font-size: 18px;
+        transition: color 0.3s ease;
+    }
+
+    .form-input:focus + .icon {
+        color: #dc2626;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .register-btn, .cancel-btn {
+        flex: 1;
+        height: 54px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .register-btn {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-btn::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .register-btn:hover::after {
+        left: 100%;
+    }
+
+    .register-btn:hover {
+        box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .cancel-btn {
+        background: white;
+        color: #dc2626;
+        border: 2px solid #fee2e2;
+    }
+
+    .cancel-btn:hover {
+        background: #fff5f5;
+        border-color: #ef4444;
+        transform: translateY(-2px);
+    }
+
+    .register-card {
+        animation: slideUp 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-group {
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.2s; }
+    .form-group:nth-child(2) { animation-delay: 0.4s; }
+    .form-group:nth-child(3) { animation-delay: 0.6s; }
+    .button-group {
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+        animation-delay: 0.8s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script>
+    let v = new Vue({
+        el: "body>div",
+        data: {
+            user: {
+                username: "",
+                password: "",
+                nickname: ""
+            }
+        },
+        methods: {
+            register(){
+                axios.post("/v1/users/register",this.user)
+                    .then(
+                        function (response){
+                            if(response.data==1){
+                                alert("注册成功")
+                                location.href = "login.html"
+                            }else if(response.data==2){
+                                alert("用户名重复")
+                            }else if(response.data==3){
+                                alert("昵称重复")
+                            }else{
+                                alert("出错了")
+                            }
+                        }
+                    )
+                    .catch(
+                        function(error) {
+                            alert("请求失败，请检查网络")
+                            console.error(error)
+                        }
+                    )
+            },
+            goToLogin() {
+                location.href = "login.html";
+            }
+        }
+    })
+</script>
+</body>
+</html>

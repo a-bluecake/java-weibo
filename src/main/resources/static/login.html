@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+</head>
+<body>
+<div class="login-wrapper">
+    <div class="login-box">
+        <div class="logo-container">
+            <div class="red-circle"></div>
+            <h1 class="login-title">用户登录</h1>
+        </div>
+
+        <div class="input-field">
+            <input
+                    type="text"
+                    placeholder="用户名"
+                    v-model="user.username"
+                    class="user-input"
+                    required
+            >
+            <span class="input-icon">
+                <i class="fa fa-user"></i>
+            </span>
+        </div>
+
+        <div class="input-field">
+            <input
+                    type="password"
+                    placeholder="密码"
+                    v-model="user.password"
+                    class="user-input"
+                    required
+            >
+            <span class="input-icon">
+                <i class="fa fa-lock"></i>
+            </span>
+        </div>
+
+        <div class="button-group">
+            <button class="action-btn login-btn" @click="login()">
+                登录
+            </button>
+            <button class="action-btn register-btn" @click="goToRegister()">
+                注册
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-wrapper {
+        width: 100%;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 420px;
+        background: white;
+        border-radius: 16px;
+        padding: 45px 35px;
+        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .logo-container {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+    .red-circle {
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, #ef4444 0%, #dc2626 100%);
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+        position: relative;
+    }
+
+    .red-circle::after {
+        content: '';
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        top: 10px;
+        left: 10px;
+    }
+
+    .login-title {
+        color: #b91c1c;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .input-field {
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .user-input {
+        width: 100%;
+        height: 55px;
+        padding: 0 20px 0 50px;
+        border: 2px solid #fecaca;
+        border-radius: 8px;
+        font-size: 16px;
+        color: #333;
+        transition: all 0.3s ease;
+        background: #fff8f8;
+    }
+
+    .user-input:focus {
+        outline: none;
+        border-color: #ef4444;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    }
+
+    .user-input::placeholder {
+        color: #f87171;
+        opacity: 0.7;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ef4444;
+        font-size: 18px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin: 30px 0 20px;
+    }
+
+    .action-btn {
+        flex: 1;
+        height: 55px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .login-btn {
+        background: #dc2626;
+        color: white;
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+    }
+
+    .login-btn:hover {
+        background: #b91c1c;
+        box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .register-btn {
+        background: white;
+        color: #dc2626;
+        border: 2px solid #fecaca;
+    }
+
+    .register-btn:hover {
+        background: #fff5f5;
+        border-color: #ef4444;
+        transform: translateY(-2px);
+    }
+
+    .forgot-link:hover {
+        color: #dc2626;
+        text-decoration: underline;
+    }
+
+    .login-box {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script>
+    let v = new Vue({
+        el:"body>div",
+        data:{
+            user: {
+                    username:"",
+                    password:""
+                }
+        },
+        methods:{
+            login(){
+                axios.post("/v1/users/login",this.user)
+                    .then(
+                        function (response){
+                            if(response.data==1){
+                                alert("登录成功")
+                                location.href = "homepage.html"
+                            }else if(response.data==2){
+                                alert("密码错误")
+                            }else if(response.data==3){
+                                alert("用户名不存在")
+                            }else{
+                                alert("出错了")
+                            }
+                        }
+                    )
+                    .catch(
+                        function(error) {
+                            alert("请求失败，请检查网络")
+                            console.error(error)
+                        }
+                    )
+            },
+            goToRegister(){
+                location.href = "register.html";
+            }
+        }
+    })
+</script>
+</body>
+</html>

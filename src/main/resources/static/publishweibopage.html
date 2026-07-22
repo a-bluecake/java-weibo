@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>发布微博</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #fff8f8;
+            padding: 30px;
+        }
+
+        #publish-weibo-app {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(220, 38, 38, 0.08);
+        }
+
+        h1 {
+            color: #dc2626;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #fee2e2;
+            font-size: 26px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        textarea::placeholder {
+            color: #f87171;
+            opacity: 0.7;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .button-group {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 11px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .publish-btn {
+            background-color: #dc2626;
+            color: white;
+            font-weight: 500;
+        }
+
+        .publish-btn:hover {
+            background-color: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .back-btn {
+            background-color: white;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
+
+        .back-btn:hover {
+            background-color: #fef2f2;
+        }
+    </style>
+</head>
+<body>
+<div id="publish-weibo-app">
+    <h1>发布微博</h1>
+
+    <textarea
+            v-model="weiboContent"
+            placeholder="请输入微博内容..."
+    ></textarea>
+
+    <div class="button-group">
+        <button class="publish-btn" @click="publishWeibo()">发布微博</button>
+        <button class="back-btn" @click="goBackHome()">返回首页</button>
+    </div>
+</div>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script>
+    new Vue({
+        el: "#publish-weibo-app",
+        data: {
+            weiboContent: "",
+            backendPort: "4566"
+        },
+        methods: {
+            publishWeibo() {
+                if (!this.weiboContent.trim()) {
+                    alert("请输入微博内容！");
+                    return;
+                }
+
+                const requestUrl = `http://localhost:${this.backendPort}/v1/users/publishWeibo`;
+
+                axios.post(
+                    requestUrl,
+                    this.weiboContent,
+                    {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        }
+                    }
+                )
+                    .then(function(response) {
+                        const resultCode = response.data;
+                        switch(resultCode) {
+                            case 1:
+                                alert("发布成功！");
+                                this.weiboContent = "";
+                                break;
+                            case 0:
+                                alert("发布失败，请重试！");
+                                break;
+                            case 2:
+                                alert("请先登录！");
+                                location.href = "login.html";
+                                break;
+                            default:
+                                alert("未知错误！");
+                        }
+                    }.bind(this))
+                    .catch(function(error) {
+                        console.error("发布微博请求失败：", error);
+                        alert("网络错误，请重试！");
+                    });
+            },
+
+            goBackHome() {
+                location.href = "homepage.html";
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发布评论页面</title>
+</head>
+<body>
+<div>
+    <h1>发布评论</h1>
+    <input type="text" placeholder="请输入评论内容" v-model="comment.content">
+    <input type="button" value="发布" @click="publish()">
+    <input type="button" value="返回" @click="goToDetailsPage()">
+</div>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script>
+    let v = new Vue({
+        el:"body>div",
+        data:{
+            comment: {
+                content:""
+            }
+        },
+        methods:{
+            publish(){
+                axios.post("/v1/users/publishComment",v.comment)
+                    .then(
+                        function (response){
+                            if(response.data==1){
+                                alert("发布成功")
+                                location.href = "detailspage.html"
+                            }
+                            else if (response.data==2){
+                                alert("用户没有登录")
+                                location.href = "login.html"
+                            }
+                            else if (response.data==3){
+                                alert("未查询到该微博")
+                                location.href = ""
+                            }
+                            else if (response.data==0){
+                                alert("出错了")
+                            }
+                        }
+                    )
+                    .catch(
+                        function(error) {
+                            alert("请求失败，请检查网络")
+                            console.error(error)
+                        }
+                    )
+            },
+            goToDetailsPage(){
+                location.href = "detailspage.html";
+            }
+        }
+    })
+</script>
+</body>
+</html>

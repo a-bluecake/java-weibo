@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>微博首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #fff8f8;
+            color: #333;
+            padding: 20px;
+        }
+
+        #weibo-app {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(220, 38, 38, 0.08);
+        }
+
+        h1 {
+            color: #dc2626;
+            font-size: 28px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #fee2e2;
+            margin-bottom: 25px;
+        }
+
+        .action-buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn {
+            background-color: #dc2626;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .primary-btn:hover {
+            background-color: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #fee2e2;
+            margin: 20px 0;
+        }
+
+        h3 {
+            color: #b91c1c;
+            font-size: 18px;
+            margin: 15px 0;
+            padding-left: 10px;
+            border-left: 3px solid #ef4444;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #f87171;
+            background-color: #fff1f1;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .weibo-item {
+            margin: 18px 0;
+            padding: 20px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            background-color: #fff5f5;
+            transition: all 0.3s ease;
+        }
+
+        .weibo-item:hover {
+            border-color: #fca5a5;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.1);
+        }
+
+        .weibo-item p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .weibo-author {
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .weibo-time {
+            color: #f87171;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .detail-btn {
+            background-color: #fff;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+            margin-top: 8px;
+        }
+
+        .detail-btn:hover {
+            background-color: #fef2f2;
+        }
+    </style>
+</head>
+<body>
+<div id="weibo-app">
+    <h1>微博首页</h1>
+    <!-- 功能按钮 -->
+    <div class="action-buttons">
+        <button class="primary-btn" @click="goToPublish()">发布微博</button>
+        <button class="primary-btn" @click="logout()">登出</button>
+    </div>
+
+    <hr>
+    <h3>所有微博</h3>
+    <p class="no-data" v-if="weiboList.length === 0">暂无微博</p>
+
+    <div class="weibo-item" v-for="(weibo, index) in weiboList" :key="index">
+        <p class="weibo-author">作者：{{ weibo.nickname }}</p>
+        <p>内容：{{ weibo.content }}</p>
+        <p class="weibo-time">时间：{{ formatTime(weibo.created) }}</p>
+        <button class="detail-btn" @click="viewDetails(weibo)">查看详情</button>
+    </div>
+</div>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script>
+    new Vue({
+        el: "#weibo-app",
+        data: {
+            weiboList: [],
+            backendPort: "4566"
+        },
+        mounted() {
+            this.loadWeiboList();
+        },
+        methods: {
+            loadWeiboList() {
+                axios.get(`http://localhost:${this.backendPort}/v1/users/expressallweibo`)
+                    .then(res => {
+                        this.weiboList = res.data || [];
+                    })
+                    .catch(err => {
+                        alert("请先登录");
+                        location.href = "login.html";
+                    });
+            },
+            viewDetails(weibo) {
+                axios.post(`http://localhost:${this.backendPort}/v1/users/expressdetailsWeibo`, weibo)
+                    .then(res => {
+                        if (res.data === 1) {
+                            location.href = "detailspage.html"; // 跳转到详情页
+                        } else {
+                            alert("查看详情失败");
+                        }
+                    });
+            },
+            logout() {
+                axios.post(`http://localhost:${this.backendPort}/v1/users/notlogin`)
+                    .then(() => {
+                        location.href = "login.html";
+                    });
+            },
+            goToPublish() {
+                location.href = "publishweibopage.html";
+            },
+            formatTime(date) {
+                return date ? new Date(date).toLocaleString() : "未知时间";
+            }
+        }
+    });
+</script>
+</body>
+</html>

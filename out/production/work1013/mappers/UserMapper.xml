@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.culr.edu.work1013.mapper.UserMapper">
+    <select id="selectByUsername" resultType="cn.culr.edu.work1013.pojo.entity.User">
+        select * from user where username = #{username}
+    </select>
+    <select id="selectByNickname" resultType="cn.culr.edu.work1013.pojo.entity.User">
+        select * from user where nickname = #{nickname}
+    </select>
+    <insert id="insert">
+        insert into user values (null ,#{username} ,#{password} ,#{nickname} ,#{created})
+    </insert>
+    <select id="selectByWeiboUserId" resultType="cn.culr.edu.work1013.pojo.entity.User">
+        select user.*
+        from weibo join user on user.id = weibo.user_id
+        where weibo.user_id = #{userId}
+    </select>
+</mapper>

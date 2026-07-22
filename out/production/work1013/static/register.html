@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册页面</title>
+</head>
+<body>
+<div>
+    <h1>用户注册</h1>
+    <input type="text" placeholder="请输入用户名" v-model="user.username"><br><br>
+    <input type="password" placeholder="请输入密码" v-model="user.password"><br><br>
+    <input type="text" placeholder="请输入昵称" v-model="user.nickname"><br><br>
+    <input type="button" value="注册" @click="register()">
+    <input type="button" value="取消" @click="goToLogin()">
+</div>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script>
+    let v = new Vue({
+        el: "body>div",
+        data: {
+            user: {
+                username: "",
+                password: "",
+                nickname: "" // 确认密码字段
+            }
+        },
+        methods: {
+            register(){
+                axios.post("/v1/users/register",v.user)
+                    .then(
+                        function (response){
+                            if(response.data==1){
+                                alert("注册成功")
+                                location.href = "login.html"
+                            }else if(response.data==2){
+                                alert("用户名重复")
+                            }else if(response.data==3){
+                                alert("昵称重复")
+                            }else{
+                                alert("出错了")
+                            }
+                        }
+                    )
+                    .catch(
+                        function(error) {
+                            alert("请求失败，请检查网络")
+                            console.error(error)
+                        }
+                    )
+            },
+            goToLogin() {
+                location.href = "login.html";
+            }
+        }
+    })
+</script>
+</body>
+</html>
